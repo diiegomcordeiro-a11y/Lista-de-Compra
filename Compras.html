@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Lista de Compras</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+:root{
+    --primary:#2e7d32;
+    --secondary:#f5f5f5;
+    --accent:#ff9800;
+    --danger:#e53935;
+    --text:#333;
+    --card:#ffffff;
+    --bg:linear-gradient(135deg,#e8f5e9,#f1f8e9);
+}
+
+body.dark{
+    --primary:#66bb6a;
+    --secondary:#1e1e1e;
+    --accent:#ffa726;
+    --danger:#ef5350;
+    --text:#eee;
+    --card:#2b2b2b;
+    --bg:linear-gradient(135deg,#121212,#1e1e1e);
+}
+
+body{
+    font-family:Segoe UI,Arial,sans-serif;
+    background:var(--bg);
+    padding:16px;
+    color:var(--text);
+    transition:.3s;
+}
+
+.container{
+    max-width:720px;
+    margin:auto;
+    background:var(--card);
+    padding:20px;
+    border-radius:16px;
+    box-shadow:0 10px 30px rgba(0,0,0,.15);
+}
+
+h2{
+    text-align:center;
+    margin-bottom:20px;
+    color:var(--primary);
+}
+
+/* CAPA */
+.capa-opcoes{
+    display:flex;
+    gap:10px;
+    margin-bottom:20px;
+}
+
+.capa-opcoes button{
+    flex:1;
+    padding:14px;
+    border-radius:12px;
+    border:none;
+    font-size:15px;
+    cursor:pointer;
+}
+
+.btn-reset{
+    margin-top:30px;
+    width:100%;
+    padding:12px;
+    border-radius:12px;
+    border:1px solid var(--danger);
+    background:transparent;
+    color:var(--danger);
+    font-size:14px;
+    cursor:pointer;
+}
+
+/* TOPO */
+.top-actions{
+    display:flex;
+    justify-content:flex-end;
+    margin-bottom:12px;
+}
+
+.top-actions button{
+    padding:8px 12px;
+    font-size:14px;
+    border-radius:10px;
+    border:none;
+    cursor:pointer;
+}
+
+/* INPUT */
+.input-area{
+    display:flex;
+    gap:8px;
+    margin-bottom:16px;
+}
+
+.input-area input{
+    flex:1;
+    padding:10px;
+    font-size:16px;
+    border-radius:10px;
+    border:1px solid #ccc;
+}
+
+.input-area button{
+    padding:10px 14px;
+    font-size:16px;
+    border-radius:10px;
+    background:var(--primary);
+    color:#fff;
+    border:none;
+    cursor:pointer;
+}
+
+/* CATEGORIA */
+.categoria{
+    margin-top:18px;
+    background:var(--secondary);
+    border-radius:14px;
+    padding:10px;
+}
+
+.categoria h3{
+    padding:8px;
+    border-radius:10px;
+    background:rgba(0,0,0,.08);
+    font-size:15px;
+}
+
+/* LISTA */
+ul{list-style:none;padding:0;margin-top:8px}
+
+li{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px;
+    background:var(--card);
+    margin-bottom:6px;
+    border-radius:10px;
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+
+.item-esq{
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+.comprado{
+    text-decoration:line-through;
+    opacity:.6;
+}
+
+/* BOTÕES */
+.acoes{
+    display:flex;
+    gap:6px;
+}
+
+.btn-editar{
+    background:var(--accent);
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    padding:5px 10px;
+}
+
+.btn-remover{
+    background:var(--danger);
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    padding:5px 10px;
+}
+
+/* MODAL */
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.6);
+}
+
+.modal-content{
+    background:var(--card);
+    padding:20px;
+    max-width:420px;
+    margin:120px auto;
+    border-radius:16px;
+}
+
+.modal-content button{
+    background:var(--primary);
+    color:#fff;
+    border:none;
+    border-radius:10px;
+    padding:12px;
+    width:100%;
+}
+
+/* MARQUEE */
+.marquee{
+    margin-top:18px;
+    padding:6px;
+    background:var(--secondary);
+    border-radius:8px;
+    overflow:hidden;
+}
+
+.marquee-track{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    white-space:nowrap;
+    animation:scroll 12s linear infinite;
+}
+
+.marquee-track img{
+    height:22px;
+    border-radius:50%;
+}
+
+@keyframes scroll{
+    from{transform:translateX(100%)}
+    to{transform:translateX(-100%)}
+}
+</style>
+</head>
+
+<body>
+
+<!-- CAPA -->
+<div class="container" id="capa">
+    <h2>🛒 Lista de Compras</h2>
+
+    <p style="text-align:center;opacity:.8">Escolha seu tema</p>
+
+    <div class="capa-opcoes">
+        <button onclick="definirTema('claro')">☀️ Claro</button>
+        <button onclick="definirTema('escuro')" style="background:#222;color:#fff">🌙 Escuro</button>
+    </div>
+
+    <button onclick="entrarApp()" style="width:100%;padding:16px;font-size:18px;border-radius:14px;background:var(--primary);color:#fff;border:none">
+        Iniciar
+    </button>
+
+    <button class="btn-reset" onclick="resetarTudo()">
+        🗑️ Zerar configuração de fábrica
+    </button>
+</div>
+
+<!-- APP -->
+<div class="container" id="app" style="display:none">
+    <h2>🛒 Lista de Compras</h2>
+
+    <div class="top-actions">
+        <button onclick="compartilhar()">📤 Compartilhar</button>
+    </div>
+
+    <div class="input-area">
+        <input type="text" id="item" placeholder="Digite o item">
+        <button onclick="adicionar()">+</button>
+    </div>
+
+    <div id="lista"></div>
+
+    <div class="marquee">
+        <div class="marquee-track">
+            <img src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png">
+            <span>Desenvolvido por Diego M. Cordeiro</span>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+    <div class="modal-content">
+        <h3>Definir categoria</h3>
+        <p id="itemNome"></p>
+
+        <select id="categoriaSelect"></select>
+
+        <p style="font-size:13px;opacity:.7">Ou criar nova categoria</p>
+        <input type="text" id="novaCategoria" placeholder="Ex: ⭐ Essenciais">
+
+        <br><br>
+        <button onclick="confirmarCategoria()">Confirmar</button>
+    </div>
+</div>
+
+<script>
+let lista=JSON.parse(localStorage.getItem("listaCompras"))||[];
+let dicionario=JSON.parse(localStorage.getItem("dicionarioCategorias"))||{};
+let categorias=JSON.parse(localStorage.getItem("categorias"))||[
+ "⭐ Essenciais","🥩 Açougue","🥦 Hortifruti","🍚 Mercearia",
+ "🧴 Higiene","🧽 Limpeza","🍞 Padaria","🍺 Bebidas","🐶 Pet","📦 Outros"
+];
+
+let itemTemp="",editIndex=null;
+const listaDiv=document.getElementById("lista");
+
+/* TEMA */
+function definirTema(t){
+    if(t==="escuro"){
+        document.body.classList.add("dark");
+        localStorage.setItem("dark","1");
+    }else{
+        document.body.classList.remove("dark");
+        localStorage.setItem("dark","0");
+    }
+}
+if(localStorage.getItem("dark")==="1"){
+    document.body.classList.add("dark");
+}
+
+/* RESET TOTAL */
+function resetarTudo(){
+    if(confirm("⚠️ Isso apagará TODOS os dados salvos.\nDeseja continuar?")){
+        localStorage.clear();
+        location.reload();
+    }
+}
+
+/* CAPA */
+function entrarApp(){
+    document.getElementById("capa").style.display="none";
+    document.getElementById("app").style.display="block";
+}
+
+/* SHARE */
+function compartilhar(){
+    let texto="🛒 Lista de Compras:\n\n";
+    lista.forEach(i=>texto+=`- ${i.nome} (${i.categoria})\n`);
+    navigator.share?navigator.share({text:texto}):navigator.clipboard.writeText(texto);
+}
+
+function salvarTudo(){
+    localStorage.setItem("listaCompras",JSON.stringify(lista));
+    localStorage.setItem("dicionarioCategorias",JSON.stringify(dicionario));
+    localStorage.setItem("categorias",JSON.stringify(categorias));
+}
+
+function atualizarSelect(){
+    categoriaSelect.innerHTML="";
+    categorias.forEach(c=>{
+        let o=document.createElement("option");
+        o.value=c;o.textContent=c;
+        categoriaSelect.appendChild(o);
+    });
+}
+
+function renderizar(){
+    listaDiv.innerHTML="";
+    let grupos={};
+    lista.forEach((i,x)=>{
+        if(!grupos[i.categoria])grupos[i.categoria]=[];
+        grupos[i.categoria].push({...i,index:x});
+    });
+
+    for(let cat in grupos){
+        let bloco=document.createElement("div");
+        bloco.className="categoria";
+        bloco.innerHTML=`<h3>${cat}</h3><ul></ul>`;
+        let ul=bloco.querySelector("ul");
+
+        grupos[cat].forEach(o=>{
+            let li=document.createElement("li");
+            li.innerHTML=`
+            <div class="item-esq">
+                <input type="checkbox" ${o.comprado?"checked":""}>
+                <span class="${o.comprado?"comprado":""}">${o.nome}</span>
+            </div>
+            <div class="acoes">
+                <button class="btn-editar">Editar</button>
+                <button class="btn-remover">X</button>
+            </div>`;
+            li.querySelector("input").onchange=e=>{
+                lista[o.index].comprado=e.target.checked;
+                salvarTudo();renderizar();
+            };
+            li.querySelector(".btn-editar").onclick=()=>editarCategoria(o.index);
+            li.querySelector(".btn-remover").onclick=()=>{
+                lista.splice(o.index,1);
+                salvarTudo();renderizar();
+            };
+            ul.appendChild(li);
+        });
+        listaDiv.appendChild(bloco);
+    }
+}
+
+function adicionar(){
+    let nome=item.value.trim().toLowerCase();
+    if(!nome||lista.some(i=>i.nome===nome))return;
+    if(dicionario[nome]){
+        lista.push({nome,categoria:dicionario[nome],comprado:false});
+        salvarTudo();renderizar();
+    }else{
+        itemTemp=nome;editIndex=null;
+        itemNome.textContent=`"${nome}"`;
+        atualizarSelect();modal.style.display="block";
+    }
+    item.value="";
+}
+
+function editarCategoria(i){
+    editIndex=i;itemTemp=lista[i].nome;
+    itemNome.textContent=`"${itemTemp}"`;
+    atualizarSelect();
+    categoriaSelect.value=lista[i].categoria;
+    modal.style.display="block";
+}
+
+function confirmarCategoria(){
+    let cat=novaCategoria.value.trim()||categoriaSelect.value;
+    if(!categorias.includes(cat))categorias.push(cat);
+    dicionario[itemTemp]=cat;
+    editIndex!=null?lista[editIndex].categoria=cat:lista.push({nome:itemTemp,categoria:cat,comprado:false});
+    novaCategoria.value="";modal.style.display="none";
+    salvarTudo();renderizar();
+}
+
+renderizar();
+</script>
+
+</body>
+</html>
